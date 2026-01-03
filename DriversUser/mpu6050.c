@@ -3,6 +3,11 @@
 #define REG_PWR_MGMT_1 0x6B
 #define REG_WHO_AM_I 0x75
 #define REG_ACCEL_XOUT_H 0x3B
+#define G 9.80665f
+
+static const float accel_LSB_sensitivity = 16384; // 16384 LSB/g
+static const float gyro_LSB_sensitivity = 131;// LSB/°/s
+static const float deg2rad = 0.017453293f;
 
 static HAL_StatusTypeDef write_u8(MPU6050 *d, uint8_t reg, uint8_t v)
 {
@@ -49,7 +54,33 @@ uint8_t MPU_Wake_Up(MPU6050 *d,uint8_t *who_out){
 	  return ((who & 0x7E) == 0x68);
 }
 
-void MPU_Read(void){
+uint8_t MPU_Read(MPU6050 *d, IMU_Sample * sample){
+	// allocate 14 bytes for reading MPU6050
+	uint8_t b[14];
+
+	// read the 14 bytes from the MPU6050 into the 14-bytes array
+	if (HAL_I2C_Mem_Read(d->i2c, d->addr, REG_ACCEL_XOUT_H,
+			I2C_MEMADD_SIZE_8BIT, b, 14, 100) != HAL_OK){
+		return 0;
+	}
+	// moves 8 bits of b[0] into the upper 8 bits of a 16 bit value and b[1] to the lower 8
+	int16_t ax = (int16_t)((b[0] << 8) | b[1]);
+	int16_t ay = (int16_t)((b[2] << 8) | b[3]);
+	int16_t az = (int16_t)((b[4] << 8) | b[5]);
+	int16_t temp = (int16_t)((b[6] << 8) | b[7]);
+	int16_t gx = (int16_t)((b[8] << 8) | b[9]);
+	int16_t gy = (int16_t)((b[10] << 8) | b[11]);
+	int16_t gz = (int16_t)((b[12] << 8) | b[13]);
+	// convert the acceleration angular velocities to SI units
+	sample -> acceleration_x = (ax / accel_LSB_sensitivity) * G;
+	sample -> acceleration_y = (ay / accel_LSB_sensitivity) * G;
+	sample -> acceleration_z = (az / accel_LSB_sensitivity) * G;
+
+	sample -> angular_rate_x = (gx/gyro_LSB_sensitivity) * deg2rad;
+	sample -> angular_rate_y = (gy/gyro_LSB_sensitivity) * deg2rad;
+	sample -> angular_rate_z = (gz/gyro_LSB_sensitivity) * deg2rad;
+
+	return 1;
 
 }
 
