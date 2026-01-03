@@ -1,3 +1,0 @@
-../Utils/debug_huart.c:12:6:DBG_Init	0	static
-../Utils/debug_huart.c:17:6:DBG_Print	16	static
-../Utils/debug_huart.c:28:6:DBG_Printf	144	static

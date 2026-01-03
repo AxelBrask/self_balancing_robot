@@ -1,3 +1,0 @@
-../DriversUser/mpu6050.c:17:6:MPU_Init	0	static
-../DriversUser/mpu6050.c:23:9:MPU_Wake_Up	48	static
-../DriversUser/mpu6050.c:52:6:MPU_Read	0	static
