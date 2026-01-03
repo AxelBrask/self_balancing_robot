@@ -1,0 +1,32 @@
+# Build output
+Debug/
+Release/
+*/Debug/
+*/Release/
+build/
+out/
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.srec
+
+# CubeIDE/Eclipse metadata (often safe to ignore; keep what you need)
+.metadata/
+.settings/
+
+# Indexes / caches
+*.log
+
+.DS_Store
+Thumbs.db
+
+CMakeCMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+*.launch
